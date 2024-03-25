@@ -1,6 +1,10 @@
 """代码的一些新尝试"""
 
 from kuai_log import k_logger
+import requests_mock
+import requests
+
+
 
 
 def check_args(params, data, json):
@@ -45,6 +49,19 @@ def hhh(a=None, b=None, c=None, d=None):
     return f"val = {e}"
 
 
+
+
+@requests_mock.Mocker(kw='mock')
+def test_mock(a=None, **kwargs):
+    kwargs['mock'].get('http://test.com', text='resp')
+    print(a)
+    print(requests.get('http://test.com').text)
+
+
+
+
 if __name__ == '__main__':
     # try_locals = check_args(params=None, data='hhh', json=3)
-    hhh(a=1, b=2, c=4)
+    # hhh(a=1, b=2, c=4)
+    test_mock()
+    test_mock(a=1)
