@@ -109,8 +109,10 @@ class HttpRequest:
         k_logger.info("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
         return res
 
-    def _handle_resp():
-        ...
+    def _handle_resp(resp: requests.Response):
+        
+        k_logger.info(resp.status_codes)
+        k_logger.info(resp.reason)
 
 
 class HttpMock:
