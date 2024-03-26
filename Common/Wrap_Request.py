@@ -1,6 +1,7 @@
 """封装各种请求类"""
 
 import requests
+from requests_mock import Mocker
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
@@ -108,8 +109,27 @@ class HttpRequest:
         k_logger.info("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
         return res
 
-    def _handle_resp():
-        ...
+    def _handle_resp(resp: requests.Response):
+        
+        k_logger.info(resp.status_codes)
+        k_logger.info(resp.reason)
+
+
+class HttpMock:
+
+    def __init__(self, method, url, ) -> None:
+        pass
+
+
+    def register_uri():
+        pass
+        mock = Mocker().register_uri()
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
