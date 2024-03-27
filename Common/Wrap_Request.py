@@ -1,7 +1,7 @@
 """封装各种请求类"""
 
 import requests
-from requests_mock import Mocker
+import requests_mock
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
@@ -11,7 +11,6 @@ class HttpRequest:
 
     def __init__(self) -> None:
         pass
-
 
     def _prepare(
         self,
@@ -26,19 +25,22 @@ class HttpRequest:
     ):
         arg_dict = locals()
         arg_dict.pop('self')
-        arg_dict.pop('method')
-        arg_dict.pop('url')
+        # arg_dict.pop('method')
+        # arg_dict.pop('url')
 
-        k_logger.info("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
-        k_logger.info("此请求为" + method + "请求")
-        k_logger.info("url为：" + url)
+        k_logger.warning("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
+        k_logger.warning("↓↓↓↓开始上传参数↓↓↓↓")
+        # k_logger.info(f"method为: {method}")
+        # k_logger.info(f"url为: {url}")
 
-        output = "无"
-        for i, (arg_key, arg_value) in enumerate(arg_dict.items(), start=1):
+        print(arg_dict.items())
+        for i, (arg_key, arg_value) in enumerate(arg_dict.items()):
+            output = "无"
             if arg_value is not None:
                 output = "\n" + _json.dumps(arg_value, indent=4)
             k_logger.info(f"{arg_key}为：" + output)
 
+        k_logger.warning("↑↑↑↑参数上传结束↑↑↑↑")
 
     def send_http(
         self,
@@ -78,14 +80,16 @@ class HttpRequest:
             verify (_type_): _description_
             cert (_type_): _description_
         """
-        self._prepare(method, url, params, data, headers, cookies, json, file_paths)
-        
+        self._prepare(method, url, params, data,
+                      headers, cookies, json, file_paths)
+
         # 用ExitStack来处理不确定数量的资源或对象
         with ExitStack() as stack:
             # 使用了or操作符来检查file_paths是否为None，如果是，则使用空列表[]代替，以避免触发异常
             # 假如file_paths为None, file_paths or []这个条件表达式判定为[], 因为None会被视为假(False), 所以files的值是一个空的字典
             # 对于requests的files参数, None或者{}都是不会报异常的
-            files = {fname: stack.enter_context(open(fname, 'rb')) for fname in file_paths or []}
+            files = {fname: stack.enter_context(
+                open(fname, 'rb')) for fname in file_paths or []}
             res = requests.request(
                 method=method,
                 url=url,
@@ -104,41 +108,34 @@ class HttpRequest:
                 cert=cert,
                 json=json
             )
-        
-        
-        k_logger.info("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
+
+        self._handle_resp(resp=res)
+        k_logger.warning("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
         return res
 
-    def _handle_resp(resp: requests.Response):
-        
-        k_logger.info(resp.status_codes)
-        k_logger.info(resp.reason)
+    def _handle_resp(self, resp: requests.Response):
+        k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
+        k_logger.info(f"状态码为：{resp.status_code} {resp.reason}")
+        k_logger.warning("↑↑↑↑响应结束↑↑↑↑")
 
 
-class HttpMock:
-
-    def __init__(self, method, url, ) -> None:
-        pass
+http_req = HttpRequest()
 
 
-    def register_uri():
-        pass
-        mock = Mocker().register_uri()
-
-
-
-
-
-
+@requests_mock.Mocker(kw="mock", real_http=True)
+def test_mock(**kwargs):
+    kwargs['mock'].get("https://whj.test", text="test mock!!", reason="ok")
+    res = http_req.send_http('get', "https://whj.test")
+    print(res.text)
 
 
 if __name__ == '__main__':
 
-    h = HttpRequest()
-    pa = {'no': 1, 'name': 'Runoob'}
-    da = {"no": 1, "name": "Runoob"}
-    he = {"no": 1, "name": "Runoob"}
-    co = {"no": 1, "name": "Runoob"}
-    js = {"no": 1, "name": "Runoob"}
-    fi = ['c://whj/hhh.txt', 'd://cxfl/www.json', 'e://fl/jjb.sass']
-    h._prepare("get", "https://hhhh.com", params=pa, data=da, headers=he, cookies=co, json=js, file_paths=fi)
+    # h = HttpRequest()
+    # pa = {'no': 1, 'name': 'Runoob'}
+    # da = {"no": 1, "name": "Runoob"}
+    # he = {"no": 1, "name": "Runoob"}
+    # co = {"no": 1, "name": "Runoob"}
+    # js = {"no": 1, "name": "Runoob"}
+    # fi = ['c://whj/hhh.txt', 'd://cxfl/www.json', 'e://fl/jjb.sass']
+    test_mock()
