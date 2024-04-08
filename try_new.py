@@ -5,8 +5,6 @@ import requests_mock
 import requests
 
 
-
-
 def check_args(params, data, json):
     w = 8
     arguments = locals()
@@ -26,12 +24,10 @@ def check_dict():
         print(i, key, value)
 
 
-
 def derector_log(func):
     def wrapper(**kwargs):
         args = locals()
         args.pop('func')
-        print(args)
         end_args = args['kwargs']
         print(end_args)
         for i, (arg_key, arg_value) in enumerate(end_args.items(), start=1):
@@ -49,8 +45,6 @@ def hhh(a=None, b=None, c=None, d=None):
     return f"val = {e}"
 
 
-
-
 @requests_mock.Mocker(kw='mock')
 def test_mock(a=None, **kwargs):
     kwargs['mock'].get('http://test.com', text='resp')
@@ -58,15 +52,8 @@ def test_mock(a=None, **kwargs):
     print(requests.get('http://test.com').text)
 
 
-
-
-
-
 if __name__ == '__main__':
     # try_locals = check_args(params=None, data='hhh', json=3)
-    # hhh(a=1, b=2, c=4)
-    test_mock()
-    test_mock(a=1)
-
-
-
+    hhh(a=1, b=2, c=4)
+    # test_mock()
+    # test_mock(a=1)

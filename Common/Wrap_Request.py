@@ -33,7 +33,6 @@ class HttpRequest:
         # k_logger.info(f"method为: {method}")
         # k_logger.info(f"url为: {url}")
 
-        print(arg_dict.items())
         for i, (arg_key, arg_value) in enumerate(arg_dict.items()):
             output = "无"
             if arg_value is not None:
@@ -116,6 +115,12 @@ class HttpRequest:
     def _handle_resp(self, resp: requests.Response):
         k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
         k_logger.info(f"状态码为：{resp.status_code} {resp.reason}")
+        content_type = resp.headers.get('Content-Type', '')
+        if 'application/json' in content_type:
+            k_logger.info(f"返回的json为：{resp.json()}")
+        elif 'text/plain' or 'text/html' in content_type:
+            k_logger.info(f"返回text为：{resp.text}")
+
         k_logger.warning("↑↑↑↑响应结束↑↑↑↑")
 
 
@@ -126,7 +131,6 @@ http_req = HttpRequest()
 def test_mock(**kwargs):
     kwargs['mock'].get("https://whj.test", text="test mock!!", reason="ok")
     res = http_req.send_http('get', "https://whj.test")
-    print(res.text)
 
 
 if __name__ == '__main__':
