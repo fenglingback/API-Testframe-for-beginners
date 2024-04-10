@@ -52,6 +52,14 @@ def test_mock(a=None, **kwargs):
     print(requests.get('http://test.com').text)
 
 
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     # try_locals = check_args(params=None, data='hhh', json=3)
     hhh(a=1, b=2, c=4)

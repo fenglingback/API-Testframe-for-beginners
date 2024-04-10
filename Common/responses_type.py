@@ -1,15 +1,34 @@
+class Text:
+    def __init__(self, subtype) -> None:
+        print("this is text type!")
 
-class Type:
+
+
+class Json:
     ...
 
 
-class text(Type):
+class Image:
     ...
 
 
-class json(Type):
+class OctetStream:
     ...
 
 
-class image(Type):
+def pipei_type(sub, subtype):
+    if sub == 'text':
+        return Text(subtype)
+    elif sub == 'application':
+        if subtype == 'json':
+            return Json()
+        elif subtype == 'octet-stream':
+            return OctetStream()
+    elif sub == 'image':
+        return Image()
+    else:
+        raise Exception("not support type")
+
+
+if __name__ == '__main__':
     ...

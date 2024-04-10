@@ -5,6 +5,7 @@ import requests_mock
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
+from responses_type import pipei_type
 
 
 class HttpRequest:
@@ -118,9 +119,18 @@ class HttpRequest:
         content_type = resp.headers.get('Content-Type', '')
         k_logger.info(f"响应的类型为：{content_type}")
 
-        # 待完善类型判断及处理
+        self._handle_type(content_type)
 
         k_logger.warning("↑↑↑↑响应结束↑↑↑↑")
+
+
+    def _handle_type(self, content_type: str):
+        if content_type is not None:
+            temp_data = content_type.partition('/')
+            sub = temp_data[0]
+            subtype = temp_data[-1]
+            pipei_type(sub, subtype)
+
 
 
 http_req = HttpRequest()
