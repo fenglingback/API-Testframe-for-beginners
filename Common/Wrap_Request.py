@@ -28,7 +28,6 @@ class HttpRequest:
         # arg_dict.pop('method')
         # arg_dict.pop('url')
 
-        k_logger.warning("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
         k_logger.warning("↓↓↓↓开始上传参数↓↓↓↓")
         # k_logger.info(f"method为: {method}")
         # k_logger.info(f"url为: {url}")
@@ -45,13 +44,13 @@ class HttpRequest:
         self,
         method,
         url,
-        params=None,
-        data=None,
-        headers=None,
-        cookies=None,
-        json=None,
+        params: dict = None,
+        data: dict = None,
+        headers: dict = None,
+        cookies: dict = None,
+        json: dict = None,
         file_paths: list = None,
-        auth=None,
+        auth: tuple = None,
         timeout=None,
         allow_redirects: bool = True,
         proxies=None,
@@ -59,26 +58,28 @@ class HttpRequest:
         stream=False,
         verify=None,
         cert=None
-    ):
+    ) -> requests.Response:
         """重新定义了请求参数的顺序
-        Args:
-            method (_type_): _请求方法_
-            url (_type_): _请求url_
-            params (_type_): _get请求传入参数_
-            data (_type_): _post请求传入参数_
-            headers (_type_): _请求头_
-            cookies (_type_): _携带的cookies_
-            json (_type_): _携带的json_
-            file_paths (_type_): _上传文件的绝对路径_
-            auth (_type_): _description_
-            timeout (_type_): _description_
-            allow_redirects (bool): _description_
-            proxies (_type_): _description_
-            hooks (_type_): _description_
-            stream (_type_): _description_
-            verify (_type_): _description_
-            cert (_type_): _description_
+        :param method: 请求方法
+        :param url: 请求地址
+        :param params: 请求参数(get方法)
+        :param data: 请求数据，用于传输body内容(post方法)
+        :param headers: 自定义请求头信息
+        :param cookies: 携带的cookie信息
+        :param json: JSON序列化后的内容，会自动设置 Content-Type: application/json 头部。只有当 data 为 None 时才能使用该参数
+        :param file_paths: 上传文件的本地路径
+        :param auth: 访问目标资源需要的认证信息，格式为元组 (username, password)
+        :param timeout: 超时时间，单位为秒
+        :param allow_redirects: 是否允许重定向
+        :param proxies: 指定使用代理服务器来连接远程服务器，字典的键为协议名称（http、https），值为代理服务器地址，格式为 {"http|https": "proxyurl"}
+        :param hooks: 注册的钩子函数，用于在请求前后执行自定义操作，常见的钩子函数有 response、download 和 upload
+        :param stream: 是否以流式方式接收响应内容，默认为 False。如果为 True，将不会缓存响应体，而是直接从网络读取
+        :param verify: 是否验证 SSL 证书，默认为 True。如果为 False，将不会验证 SSL 证书，即使目标服务器使用了 HTTPS 协议
+        :param cert: 指定客户端 SSL 证书，通常情况下不需要配置，因为 requests 会尝试使用系统默认的 CA 证书。
+                     如果配置，可以是单个证书文件或包含两个元素的元组（证书文件，私钥文件），用于验证目标服务器。
         """
+
+        k_logger.warning("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
         self._prepare(method, url, params, data,
                       headers, cookies, json, file_paths)
 
@@ -87,9 +88,8 @@ class HttpRequest:
             # 使用了or操作符来检查file_paths是否为None，如果是，则使用空列表[]代替，以避免触发异常
             # 假如file_paths为None, file_paths or []这个条件表达式判定为[], 因为None会被视为假(False), 所以files的值是一个空的字典
             # 对于requests的files参数, None或者{}都是不会报异常的
-            files = {fname: stack.enter_context(
-                open(fname, 'rb')) for fname in file_paths or []}
-            res = requests.request(
+            files = {fname: stack.enter_context(open(fname, 'rb')) for fname in file_paths or []}
+            res = requests.Session().request(
                 method=method,
                 url=url,
                 params=params,
@@ -116,10 +116,9 @@ class HttpRequest:
         k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
         k_logger.info(f"状态码为：{resp.status_code} {resp.reason}")
         content_type = resp.headers.get('Content-Type', '')
-        if 'application/json' in content_type:
-            k_logger.info(f"返回的json为：{resp.json()}")
-        elif 'text/plain' or 'text/html' in content_type:
-            k_logger.info(f"返回text为：{resp.text}")
+        k_logger.info(f"响应的类型为：{content_type}")
+
+        # 待完善类型判断及处理
 
         k_logger.warning("↑↑↑↑响应结束↑↑↑↑")
 
