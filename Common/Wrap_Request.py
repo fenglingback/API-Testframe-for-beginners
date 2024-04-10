@@ -126,7 +126,9 @@ class HttpRequest:
 
     def _handle_type(self, content_type: str):
         if content_type is not None:
-            temp_data = content_type.partition('/')
+            if ';' in content_type:
+                content_type = content_type.split(';')[0]
+            temp_data = content_type.split('/')
             sub = temp_data[0]
             subtype = temp_data[-1]
             pipei_type(sub, subtype)
