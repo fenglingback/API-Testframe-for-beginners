@@ -53,7 +53,14 @@ def test_mock(a=None, **kwargs):
 
 
 
-
+def handle_type(content_type: str):
+    if content_type is not None:
+        if ';' in content_type:
+            content_type = content_type.split(';')[0]
+        temp_data = content_type.split('/')
+        sub = temp_data[0]
+        subtype = temp_data[-1]
+        print(sub, subtype)
 
 
 
@@ -62,6 +69,8 @@ def test_mock(a=None, **kwargs):
 
 if __name__ == '__main__':
     # try_locals = check_args(params=None, data='hhh', json=3)
-    hhh(a=1, b=2, c=4)
+    # hhh(a=1, b=2, c=4)
     # test_mock()
     # test_mock(a=1)
+    handle_type('application/json')
+    handle_type('application/json; charset=utf-8')
