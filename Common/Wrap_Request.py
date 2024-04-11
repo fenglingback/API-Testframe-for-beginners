@@ -5,7 +5,7 @@ import requests_mock
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
-from responses_type import pipei_type
+from responses_type import fenge_type, pipei_type
 
 
 class HttpRequest:
@@ -116,22 +116,13 @@ class HttpRequest:
     def _handle_resp(self, resp: requests.Response):
         k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
         k_logger.info(f"状态码为：{resp.status_code} {resp.reason}")
-        content_type = resp.headers.get('Content-Type', '')
-        k_logger.info(f"响应的类型为：{content_type}")
 
-        self._handle_type(content_type)
+        pipei_type(*fenge_type(resp))
 
         k_logger.warning("↑↑↑↑响应结束↑↑↑↑")
 
 
-    def _handle_type(self, content_type: str):
-        if content_type is not None:
-            if ';' in content_type:
-                content_type = content_type.split(';')[0]
-            temp_data = content_type.split('/')
-            sub = temp_data[0]
-            subtype = temp_data[-1]
-            pipei_type(sub, subtype)
+
 
 
 
@@ -140,7 +131,7 @@ http_req = HttpRequest()
 
 @requests_mock.Mocker(kw="mock", real_http=True)
 def test_mock(**kwargs):
-    kwargs['mock'].get("https://whj.test", text="test mock!!", reason="ok")
+    kwargs['mock'].register_uri("get", "https://whj.test", text="test mock!!", reason="ok", headers={"Content-Type": "text/plain"})
     res = http_req.send_http('get', "https://whj.test")
 
 
