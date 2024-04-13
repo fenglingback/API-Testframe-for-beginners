@@ -56,7 +56,7 @@ class HttpRequest:
         json: dict = None,
         file_paths: list = None,
         auth: tuple = None,
-        timeout: int =None,
+        timeout: int = None,
         allow_redirects: bool = True,
         proxies=None,
         hooks=None,
