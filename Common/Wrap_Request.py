@@ -2,6 +2,7 @@
 
 import requests
 import requests_mock
+import os
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
@@ -29,14 +30,17 @@ class HttpRequest:
         # arg_dict.pop('method')
         # arg_dict.pop('url')
 
+        # 待完善对传入参数的处理，params、data、json不能混用
+
         k_logger.warning("↓↓↓↓开始上传参数↓↓↓↓")
-        # k_logger.info(f"method为: {method}")
-        # k_logger.info(f"url为: {url}")
 
         for i, (arg_key, arg_value) in enumerate(arg_dict.items()):
             output = "无"
             if arg_value is not None:
-                output = "\n" + _json.dumps(arg_value, indent=4)
+                if isinstance(arg_value, dict) or isinstance(arg_value, list):
+                    output = "\n" + _json.dumps(arg_value, indent=4)
+                else:
+                    output = arg_value
             k_logger.info(f"{arg_key}为：" + output)
 
         k_logger.warning("↑↑↑↑参数上传结束↑↑↑↑")
@@ -52,7 +56,7 @@ class HttpRequest:
         json: dict = None,
         file_paths: list = None,
         auth: tuple = None,
-        timeout=None,
+        timeout: int = None,
         allow_redirects: bool = True,
         proxies=None,
         hooks=None,
@@ -64,9 +68,9 @@ class HttpRequest:
         :param method: 请求方法
         :param url: 请求地址
         :param params: 请求参数(get方法)
-        :param data: 请求数据，用于传输body内容(post方法)
-        :param headers: 自定义请求头信息
-        :param cookies: 携带的cookie信息
+        :param data: 请求数据，用于传输body内容(post方法)，
+        :param headers: 自定义请求头信息，其中字典的值必须为字符串类型
+        :param cookies: 携带的cookie信息，其中字典的值必须为字符串类型
         :param json: JSON序列化后的内容，会自动设置 Content-Type: application/json 头部。只有当 data 为 None 时才能使用该参数
         :param file_paths: 上传文件的本地路径
         :param auth: 访问目标资源需要的认证信息，格式为元组 (username, password)
@@ -89,7 +93,7 @@ class HttpRequest:
             # 使用了or操作符来检查file_paths是否为None，如果是，则使用空列表[]代替，以避免触发异常
             # 假如file_paths为None, file_paths or []这个条件表达式判定为[], 因为None会被视为假(False), 所以files的值是一个空的字典
             # 对于requests的files参数, None或者{}都是不会报异常的
-            files = {fname: stack.enter_context(open(fname, 'rb')) for fname in file_paths or []}
+            files = {os.path.basename(fname): stack.enter_context(open(fname, 'rb')) for fname in file_paths or []}
             resp = requests.Session().request(
                 method=method,
                 url=url,
@@ -132,16 +136,15 @@ http_req = HttpRequest()
 @requests_mock.Mocker(kw="mock", real_http=True)
 def test_mock(**kwargs):
     kwargs['mock'].register_uri("get", "https://whj.test", text="test mock!!", reason="ok", headers={"Content-Type": "text/plain"})
-    res = http_req.send_http('get', "https://whj.test")
+    res = http_req.send_http('get', "https://whj.test", kwargs['params'], kwargs['data'], kwargs['headers'], kwargs['cookies'], kwargs['json'], kwargs['file_paths'])
 
 
 if __name__ == '__main__':
 
-    # h = HttpRequest()
-    # pa = {'no': 1, 'name': 'Runoob'}
-    # da = {"no": 1, "name": "Runoob"}
-    # he = {"no": 1, "name": "Runoob"}
-    # co = {"no": 1, "name": "Runoob"}
-    # js = {"no": 1, "name": "Runoob"}
-    # fi = ['c://whj/hhh.txt', 'd://cxfl/www.json', 'e://fl/jjb.sass']
-    test_mock()
+    pa = {'no': 1, 'name': 'Runoob'}
+    da = {"no": 1, "name": "Runoob"}
+    he = {"no": "haha", "name": "Runoob"}
+    co = {"no": "whj", "name": "Runoob"}
+    js = {"no": 1, "name": "Runoob"}
+    fi = ['d://temp/whj.txt']
+    test_mock(params=pa, data=da, headers=he, cookies=co, json=js, file_paths=fi)

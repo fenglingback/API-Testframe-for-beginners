@@ -19,8 +19,9 @@ class Text:
 
 
 class Json:
-    def __init__(self) -> None:
-        print("this is json type!")
+    def __init__(self, resp: Response) -> None:
+        k_logger.info("返回的是 json！")
+        k_logger.info(f"返回的 json 为：{resp.json()}")
 
 
 class Image(Download):
