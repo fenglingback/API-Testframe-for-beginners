@@ -5,7 +5,7 @@ import requests_mock
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
-from responses_type import fenge_type, pipei_type
+from responses_type import handle_type
 
 
 class HttpRequest:
@@ -90,7 +90,7 @@ class HttpRequest:
             # 假如file_paths为None, file_paths or []这个条件表达式判定为[], 因为None会被视为假(False), 所以files的值是一个空的字典
             # 对于requests的files参数, None或者{}都是不会报异常的
             files = {fname: stack.enter_context(open(fname, 'rb')) for fname in file_paths or []}
-            res = requests.Session().request(
+            resp = requests.Session().request(
                 method=method,
                 url=url,
                 params=params,
@@ -109,15 +109,15 @@ class HttpRequest:
                 json=json
             )
 
-        self._handle_resp(resp=res)
+        self._handle_resp(resp=resp)
         k_logger.warning("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
-        return res
+        return resp
 
     def _handle_resp(self, resp: requests.Response):
         k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
         k_logger.info(f"状态码为：{resp.status_code} {resp.reason}")
 
-        pipei_type(*fenge_type(resp))
+        handle_type(resp)
 
         k_logger.warning("↑↑↑↑响应结束↑↑↑↑")
 
