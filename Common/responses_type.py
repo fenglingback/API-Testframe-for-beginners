@@ -40,7 +40,8 @@ class OctetStream(Download):
 
 
 
-def fenge_type(resp: Response):
+
+def handle_type(resp: Response):
     content_type = resp.headers.get('Content-Type')
     k_logger.info(f"响应的类型为：{content_type}")
 
@@ -50,11 +51,8 @@ def fenge_type(resp: Response):
         temp_data = content_type.split('/')
         sub = temp_data[0]
         subtype = temp_data[-1]
-        return resp, sub, subtype
 
 
-
-def pipei_type(resp, sub, subtype):
     if sub == 'text':
         content = Text(resp, subtype)
     elif sub == 'application':
