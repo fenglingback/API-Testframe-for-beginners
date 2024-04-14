@@ -14,34 +14,34 @@ class HttpRequest:
     def __init__(self) -> None:
         pass
 
-    def _prepare(
-        self,
-        method,
-        url,
-        params: dict = None,
-        data: dict = None,
-        headers: dict = None,
-        cookies: dict = None,
-        json: dict = None,
-        file_paths: list = None
-    ):
+    def _prepare(self, **kwargs):
         arg_dict = locals()
+        # print(arg_dict)
         arg_dict.pop('self')
-        # arg_dict.pop('method')
-        # arg_dict.pop('url')
+        arg_dict = arg_dict['kwargs']
 
         # 待完善对传入参数的处理，params、data、json不能混用
+        if kwargs['method'] == 'get' and (kwargs['data'] is not None or kwargs['json'] is not None):
+            raise ValueError("get方法不能传data或json参数")
+        elif kwargs['method'] == 'post' and kwargs['params'] is not None:
+            raise ValueError("post方法不能传params参数")
+
+        if kwargs['json'] is not None and (kwargs['params'] is not None or kwargs['data'] is not None):
+            raise ValueError("json不能与params或data同时传")
+        
 
         k_logger.warning("↓↓↓↓开始上传参数↓↓↓↓")
 
-        for i, (arg_key, arg_value) in enumerate(arg_dict.items()):
-            output = "无"
-            if arg_value is not None:
-                if isinstance(arg_value, dict) or isinstance(arg_value, list):
-                    output = "\n" + _json.dumps(arg_value, indent=4)
-                else:
-                    output = arg_value
-            k_logger.info(f"{arg_key}为：" + output)
+        # for i, (arg_key, arg_value) in enumerate(arg_dict.items()):
+        #     output = "无"
+        #     if arg_value is not None:
+        #         if isinstance(arg_value, dict) or isinstance(arg_value, list):
+        #             output = "\n" + _json.dumps(arg_value, indent=4)
+        #         else:
+        #             output = arg_value
+        #     k_logger.info(f"{arg_key}为：" + output)
+
+        k_logger.info("\n" + _json.dumps(arg_dict, indent=4))
 
         k_logger.warning("↑↑↑↑参数上传结束↑↑↑↑")
 
@@ -84,9 +84,10 @@ class HttpRequest:
                      如果配置，可以是单个证书文件或包含两个元素的元组（证书文件，私钥文件），用于验证目标服务器。
         """
 
+        kwargs = locals()
+        kwargs.pop('self')
         k_logger.warning("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
-        self._prepare(method, url, params, data,
-                      headers, cookies, json, file_paths)
+        self._prepare(**kwargs)
 
         # 用ExitStack来处理不确定数量的资源或对象
         with ExitStack() as stack:
@@ -135,8 +136,8 @@ http_req = HttpRequest()
 
 @requests_mock.Mocker(kw="mock", real_http=True)
 def test_mock(**kwargs):
-    kwargs['mock'].register_uri("get", "https://whj.test", text="test mock!!", reason="ok", headers={"Content-Type": "text/plain"})
-    res = http_req.send_http('get', "https://whj.test", kwargs['params'], kwargs['data'], kwargs['headers'], kwargs['cookies'], kwargs['json'], kwargs['file_paths'])
+    kwargs['mock'].register_uri("post", "https://whj.test", text="test mock!!", reason="ok", headers={"Content-Type": "text/plain"})
+    res = http_req.send_http('post', "https://whj.test", None, kwargs['data'], kwargs['headers'], kwargs['cookies'], None, kwargs['file_paths'])
 
 
 if __name__ == '__main__':
@@ -146,5 +147,5 @@ if __name__ == '__main__':
     he = {"no": "haha", "name": "Runoob"}
     co = {"no": "whj", "name": "Runoob"}
     js = {"no": 1, "name": "Runoob"}
-    fi = ['d://temp/whj.txt']
-    test_mock(params=pa, data=da, headers=he, cookies=co, json=js, file_paths=fi)
+    fi = ['d://temp/whj.txt', 'd://temp/tsl.txt']
+    test_mock(data=da, headers=he, cookies=co, file_paths=fi)
