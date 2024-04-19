@@ -6,7 +6,7 @@ import os
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
-from responses_type import handle_type
+from ResponsesType import handle_type
 
 
 class HttpRequest:
@@ -133,9 +133,11 @@ http_req = HttpRequest()
 
 
 @requests_mock.Mocker(kw="mock", real_http=True)
-def test_mock(**kwargs):
+def test_method_by_mock(data, headers, cookies, file_paths, **kwargs):
     kwargs['mock'].register_uri("post", "https://whj.test", text="test mock!!", reason="ok", headers={"Content-Type": "text/plain"})
-    res = http_req.send_http('post', "https://whj.test", None, kwargs['data'], kwargs['headers'], kwargs['cookies'], None, kwargs['file_paths'])
+    res = http_req.send_http('post', "https://whj.test", None, data, headers, cookies, None, file_paths)
+
+
 
 
 if __name__ == '__main__':
@@ -146,4 +148,4 @@ if __name__ == '__main__':
     co = {"no": "whj", "name": "Runoob"}
     js = {"no": 1, "name": "Runoob"}
     fi = ['d://temp/whj.txt', 'd://temp/tsl.txt']
-    test_mock(data=da, headers=he, cookies=co, file_paths=fi)
+    test_method_by_mock(data=da, headers=he, cookies=co, file_paths=fi)
