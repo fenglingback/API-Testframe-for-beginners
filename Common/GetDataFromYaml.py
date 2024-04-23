@@ -14,4 +14,4 @@ def read_yaml(file_name):
     return data
 
 
-read_yaml('table_data.yml')
+# read_yaml('table_data.yml')

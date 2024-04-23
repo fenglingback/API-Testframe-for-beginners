@@ -148,4 +148,5 @@ if __name__ == '__main__':
     co = {"no": "whj", "name": "Runoob"}
     js = {"no": 1, "name": "Runoob"}
     fi = ['d://temp/whj.txt', 'd://temp/tsl.txt']
-    test_method_by_mock(data=da, headers=he, cookies=co, file_paths=fi)
+    example_1 = {'data': da, 'headers': he, 'cookies': co, 'file_paths': fi}
+    test_method_by_mock(**example_1)
