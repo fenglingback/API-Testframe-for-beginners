@@ -1,0 +1,11 @@
+https://petstore3.swagger.io/api/v3/pet:
+  - /findByStatus:
+      method: get
+      params: 
+        status: 
+          pending
+  - /findByTags:
+      method: get
+      params: 
+        tags: 
+          KHCHxvalTW

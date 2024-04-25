@@ -6,7 +6,10 @@ import os
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
-from ResponsesType import handle_type
+from Common.ResponsesType import handle_type
+from Common.GetDataFromYaml import getdata
+
+
 
 
 class HttpRequest:
@@ -47,8 +50,8 @@ class HttpRequest:
 
     def send_http(
         self,
-        method,
-        url,
+        method: str = None,
+        url: str = None,
         params: dict = None,
         data: dict = None,
         headers: dict = None,
@@ -86,7 +89,7 @@ class HttpRequest:
 
         kwargs = locals()
         kwargs.pop('self')
-        k_logger.warning("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
+        k_logger.debug("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
         self._prepare(**kwargs)
 
         # 用ExitStack来处理不确定数量的资源或对象
@@ -115,7 +118,7 @@ class HttpRequest:
             )
 
         self._handle_resp(resp=resp)
-        k_logger.warning("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
+        k_logger.debug("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
         return resp
 
     def _handle_resp(self, resp: requests.Response):
@@ -140,13 +143,16 @@ def test_method_by_mock(data, headers, cookies, file_paths, **kwargs):
 
 
 
+
+
 if __name__ == '__main__':
 
-    pa = {'no': 1, 'name': 'Runoob'}
-    da = {"no": 1, "name": "Runoob"}
-    he = {"no": "haha", "name": "Runoob"}
-    co = {"no": "whj", "name": "Runoob"}
-    js = {"no": 1, "name": "Runoob"}
-    fi = ['d://temp/whj.txt', 'd://temp/tsl.txt']
-    example_1 = {'data': da, 'headers': he, 'cookies': co, 'file_paths': fi}
-    test_method_by_mock(**example_1)
+    # pa = {'no': 1, 'name': 'Runoob'}
+    # da = {"no": 1, "name": "Runoob"}
+    # he = {"no": "haha", "name": "Runoob"}
+    # co = {"no": "whj", "name": "Runoob"}
+    # js = {"no": 1, "name": "Runoob"}
+    # fi = ['d://temp/whj.txt', 'd://temp/tsl.txt']
+    # example_1 = {'data': da, 'headers': he, 'cookies': co, 'file_paths': fi}
+    # test_method_by_mock(**example_1)
+    pass
