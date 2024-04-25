@@ -1,6 +1,6 @@
 from requests import Response
 from kuai_log import k_logger
-
+import json as _json
 
 
 class Download:
@@ -21,7 +21,9 @@ class Text:
 class Json:
     def __init__(self, resp: Response) -> None:
         k_logger.info("返回的是 json！")
-        k_logger.info(f"返回的 json 为：{resp.json()}")
+        k_logger.info(f"返回的 json 为：\n{_json.dumps(resp.json(), indent=4)}")
+
+
 
 
 class Image(Download):
@@ -30,6 +32,8 @@ class Image(Download):
 
     def save_as_file(self, file_path):
         pass
+
+
 
 
 class OctetStream(Download):
@@ -58,7 +62,7 @@ def handle_type(resp: Response):
         content = Text(resp, subtype)
     elif sub == 'application':
         if subtype == 'json':
-            content = Json()
+            content = Json(resp)
         elif subtype == 'octet-stream':
             content = OctetStream()
     elif sub == 'image':

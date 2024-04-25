@@ -69,8 +69,9 @@ def handle_type(content_type: str):
 
 if __name__ == '__main__':
     # try_locals = check_args(params=None, data='hhh', json=3)
+    check_dict()
     # hhh(a=1, b=2, c=4)
     # test_mock()
     # test_mock(a=1)
-    handle_type('application/json')
-    handle_type('application/json; charset=utf-8')
+    # handle_type('application/json')
+    # handle_type('application/json; charset=utf-8')
