@@ -3,6 +3,7 @@ from kuai_log import k_logger
 import json as _json
 
 
+
 class Download:
     def save_as_file(self, file_path):
         ...
@@ -17,12 +18,19 @@ class Text:
 
 
 
-
 class Json:
     def __init__(self, resp: Response) -> None:
         k_logger.info("返回的是 json！")
         k_logger.info(f"返回的 json 为：\n{_json.dumps(resp.json(), indent=4)}")
 
+
+
+
+
+
+class Xml:
+    def __init__(self, resp: Response) -> None:
+        pass
 
 
 
@@ -46,7 +54,9 @@ class OctetStream(Download):
 
 
 
-def handle_type(resp: Response):
+def handle_resp(resp: Response):
+
+    k_logger.info(f"状态码为：{resp.status_code} {resp.reason}")
     content_type = resp.headers.get('Content-Type')
     k_logger.info(f"响应的类型为：{content_type}")
 
@@ -57,18 +67,22 @@ def handle_type(resp: Response):
         sub = temp_data[0]
         subtype = temp_data[-1]
 
-
     if sub == 'text':
         content = Text(resp, subtype)
     elif sub == 'application':
         if subtype == 'json':
             content = Json(resp)
+        elif subtype == 'xml':
+            content = Xml(resp)
         elif subtype == 'octet-stream':
             content = OctetStream()
     elif sub == 'image':
         content = Image()
     else:
-        raise Exception("not support type")
+        raise Exception("响应类型还未进行判断处理......")
+
+
+
     return content
 
 

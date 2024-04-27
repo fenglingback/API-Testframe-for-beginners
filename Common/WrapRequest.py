@@ -6,7 +6,8 @@ import os
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
-from Common.ResponsesType import handle_type
+from requests import JSONDecodeError
+from Common.ResponsesType import handle_resp
 from Common.GetDataFromYaml import getdata
 
 
@@ -89,8 +90,8 @@ class HttpRequest:
 
         kwargs = locals()
         kwargs.pop('self')
-        k_logger.debug("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
         self._prepare(**kwargs)
+        k_logger.debug("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
 
         # 用ExitStack来处理不确定数量的资源或对象
         with ExitStack() as stack:
@@ -116,18 +117,18 @@ class HttpRequest:
                 cert=cert,
                 json=json
             )
+        k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
+        try:
+            handle_resp(resp)
+        except JSONDecodeError as e:
+            k_logger.error(f"返回的 json 解析失败！{e.__doc__}")
+            raise e
+        finally:
+            k_logger.warning("↑↑↑↑响应返回结束↑↑↑↑")
+            k_logger.debug("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
 
-        self._handle_resp(resp=resp)
-        k_logger.debug("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
         return resp
 
-    def _handle_resp(self, resp: requests.Response):
-        k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
-        k_logger.info(f"状态码为：{resp.status_code} {resp.reason}")
-
-        handle_type(resp)
-
-        k_logger.warning("↑↑↑↑响应结束↑↑↑↑")
 
 
 
