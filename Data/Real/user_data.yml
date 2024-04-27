@@ -1,0 +1,8 @@
+https://petstore3.swagger.io/api/v3/user:
+  - /login:
+      method: get
+      params: 
+        username:
+          test
+        password:
+          abc123
