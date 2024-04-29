@@ -6,7 +6,6 @@ import os
 import json as _json
 from contextlib import ExitStack
 from kuai_log import k_logger
-from requests import JSONDecodeError
 from Common.ResponsesType import handle_resp
 from Common.GetDataFromYaml import getdata
 
@@ -120,8 +119,9 @@ class HttpRequest:
         k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
         try:
             handle_resp(resp)
-        except JSONDecodeError as e:
-            k_logger.error(f"返回的 json 解析失败！{e.__doc__}")
+        except Exception as e:
+            if e.__class__ == requests.JSONDecodeError:
+                k_logger.error(f"返回的 json 解析失败！{e.__doc__}")
             raise e
         finally:
             k_logger.warning("↑↑↑↑响应返回结束↑↑↑↑")

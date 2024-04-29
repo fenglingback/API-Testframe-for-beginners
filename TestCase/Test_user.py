@@ -1,11 +1,16 @@
 import unittest
 import ddt
+# from kuai_log import k_logger
 from Common.WrapRequest import http_req
 from Common.GetDataFromYaml import getdata
 
 
+
+
 shuju = getdata.return_data_from('user_data.yml', isMock=False)
 # print(shuju)
+
+
 
 
 @ddt.ddt
