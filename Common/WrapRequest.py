@@ -5,7 +5,8 @@ import requests_mock
 import os
 import json as _json
 from contextlib import ExitStack
-from kuai_log import k_logger
+# from kuai_log import k_logger
+from Common.WrapNblog import logger_inside
 from Common.ResponsesType import handle_resp
 from Common.GetDataFromYaml import getdata
 
@@ -33,7 +34,7 @@ class HttpRequest:
             raise ValueError("json不能与params或data同时传")
         
 
-        k_logger.warning("↓↓↓↓开始上传参数↓↓↓↓")
+        logger_inside.warning("↓↓↓↓开始上传参数↓↓↓↓")
 
         # for i, (arg_key, arg_value) in enumerate(arg_dict.items()):
         #     output = "无"
@@ -42,11 +43,11 @@ class HttpRequest:
         #             output = "\n" + _json.dumps(arg_value, indent=4)
         #         else:
         #             output = arg_value
-        #     k_logger.info(f"{arg_key}为：" + output)
+        #     logger_inside.info(f"{arg_key}为：" + output)
 
-        k_logger.info("\n" + _json.dumps(arg_dict, indent=4))
+        logger_inside.info("\n" + _json.dumps(arg_dict, indent=4))
 
-        k_logger.warning("↑↑↑↑参数上传结束↑↑↑↑")
+        logger_inside.warning("↑↑↑↑参数上传结束↑↑↑↑")
 
     def send_http(
         self,
@@ -89,8 +90,9 @@ class HttpRequest:
 
         kwargs = locals()
         kwargs.pop('self')
+        logger_inside.debug("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
         self._prepare(**kwargs)
-        k_logger.debug("↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓")
+
 
         # 用ExitStack来处理不确定数量的资源或对象
         with ExitStack() as stack:
@@ -116,16 +118,19 @@ class HttpRequest:
                 cert=cert,
                 json=json
             )
-        k_logger.warning("↓↓↓↓开始返回响应↓↓↓↓")
+        logger_inside.warning("↓↓↓↓开始返回响应↓↓↓↓")
         try:
             handle_resp(resp)
         except Exception as e:
             if e.__class__ == requests.JSONDecodeError:
-                k_logger.error(f"返回的 json 解析失败！{e.__doc__}")
+                logger_inside.error(f"返回的 json 解析失败！{e.__doc__}")
+            
+            logger_inside.info(f"返回的二进制数据为：{resp.content}")
+            logger_inside.error(e)
             raise e
         finally:
-            k_logger.warning("↑↑↑↑响应返回结束↑↑↑↑")
-            k_logger.debug("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
+            logger_inside.warning("↑↑↑↑响应返回结束↑↑↑↑")
+            logger_inside.debug("↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑")
 
         return resp
 
