@@ -1,0 +1,64 @@
+2024-05-04 08:11:58 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:91" - send_http - DEBUG - ↓↓↓↓↓↓↓↓请求开始↓↓↓↓↓↓↓↓
+2024-05-04 08:11:58 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:35" - _prepare - WARNING - ↓↓↓↓开始上传参数↓↓↓↓
+2024-05-04 08:11:58 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:46" - _prepare - INFO - 
+{
+    "method": "get",
+    "url": "https://petstore3.swagger.io/api/v3/user/login",
+    "params": {
+        "username": "test",
+        "password": "abc123"
+    },
+    "data": null,
+    "headers": null,
+    "cookies": null,
+    "json": null,
+    "file_paths": null,
+    "auth": null,
+    "timeout": null,
+    "allow_redirects": true,
+    "proxies": null,
+    "hooks": null,
+    "stream": false,
+    "verify": null,
+    "cert": null
+}
+2024-05-04 08:11:58 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:48" - _prepare - WARNING - ↑↑↑↑参数上传结束↑↑↑↑
+2024-05-04 08:11:59 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:119" - send_http - WARNING - ↓↓↓↓开始返回响应↓↓↓↓
+2024-05-04 08:11:59 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:124" - send_http - ERROR - 返回的 json 响应解析失败！Couldn't decode the text into json
+2024-05-04 08:11:59 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:126" - send_http - INFO - 返回的二进制数据为：b'Logged in user session: 5758390917119306705'
+2024-05-04 08:11:59 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:130" - send_http - WARNING - ↑↑↑↑响应返回结束↑↑↑↑
+2024-05-04 08:11:59 - TestUser - "D:\repo\API_TestFrame\Common\WrapRequest.py:131" - send_http - DEBUG - ↑↑↑↑↑↑↑↑请求结束↑↑↑↑↑↑↑↑
+2024-05-04 08:11:59 - TestUser - "d:\repo\API_TestFrame\TestCase\Test_user.py:37" - test_user - ERROR - Expecting value: line 1 column 1 (char 0)
+Traceback (most recent call last):
+  File "E:\Python\Lib\site-packages\requests\models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Python\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Python\Lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Python\Lib\json\decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\repo\API_TestFrame\TestCase\Test_user.py", line 35, in test_user
+    res = self.http_req.send_http(**data)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\repo\API_TestFrame\Common\WrapRequest.py", line 128, in send_http
+    raise e
+  File "D:\repo\API_TestFrame\Common\WrapRequest.py", line 121, in send_http
+    handle_resp(resp)
+  File "D:\repo\API_TestFrame\Common\ResponsesType.py", line 72, in handle_resp
+    content = Json(resp)
+              ^^^^^^^^^^
+  File "D:\repo\API_TestFrame\Common\ResponsesType.py", line 24, in __init__
+    console_logger.info(f"返回的 json 为：\n{_json.dumps(resp.json(), indent=4)}")
+                                                         ^^^^^^^^^^^
+  File "E:\Python\Lib\site-packages\requests\models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)

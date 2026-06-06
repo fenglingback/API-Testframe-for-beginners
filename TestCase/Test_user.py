@@ -1,6 +1,7 @@
 import unittest
 import ddt
-from Common.WrapRequest import http_req
+from Common.WrapRequest import HttpRequest
+from nb_log import LogManager
 from Common.GetDataFromYaml import getdata
 
 
@@ -18,6 +19,9 @@ class TestUser(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # makeLogFile("Test_HomePage")
+        # cls.logger = MyLogger(is_stream=False, file_name='TestUser.log').logger
+        cls.logger = LogManager('TestUser').get_logger_and_add_handlers(is_add_stream_handler=False, log_filename='TestUser.log')
+        cls.http_req = HttpRequest(logger=cls.logger)
         pass
 
     @classmethod
@@ -27,10 +31,10 @@ class TestUser(unittest.TestCase):
     @ddt.data(*shuju)
     def test_user(self, data):
         try:
-            res = http_req.send_http(**data)
+            res = self.http_req.send_http(**data)
         except Exception as e:
+            self.logger.exception(e)
             raise e
-
 
 
 
